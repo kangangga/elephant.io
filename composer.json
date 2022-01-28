@@ -1,5 +1,5 @@
 {
-    "name": "kangangga/elephant.io",
+    "name": "kangangga/elephant.io-fork",
     "type": "library",
     "description": "Send events to a websocket",
     "license": "MIT",

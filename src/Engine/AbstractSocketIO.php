@@ -1,4 +1,5 @@
 <?php
+
 /**
  * This file is part of the Elephant.io package
  *
@@ -55,16 +56,33 @@ abstract class AbstractSocketIO implements EngineInterface
     /** @var mixed[] Array of php stream context options */
     protected $context = [];
 
+    /** @var string query options */
+    protected $query;
+
     public function __construct($url, array $options = [])
     {
         $this->url = $url;
+
+        if (array_key_exists('query', $options)) {
+            $this->setQuery($options['query']);
+        }
 
         if (isset($options['context'])) {
             $this->context = $options['context'];
             unset($options['context']);
         }
 
+        if (isset($this->query)) {
+            $this->url .= '?' . $this->query;
+        }
+
         $this->options = \array_replace($this->getDefaultOptions(), $options);
+    }
+
+    public function setQuery(array $options = [])
+    {
+        $this->query = http_build_query($options);
+        return $this;
     }
 
     /**
@@ -74,7 +92,7 @@ abstract class AbstractSocketIO implements EngineInterface
      */
     public function getOptions()
     {
-      return $this->options;
+        return $this->options;
     }
 
     /** {@inheritDoc} */
@@ -117,7 +135,7 @@ abstract class AbstractSocketIO implements EngineInterface
     /** {@inheritDoc} */
     public function wait($event)
     {
-      throw new UnsupportedActionException($this, 'wait');
+        throw new UnsupportedActionException($this, 'wait');
     }
 
     /**
@@ -168,7 +186,7 @@ abstract class AbstractSocketIO implements EngineInterface
         $data = $this->readBytes(2);
         $bytes = \unpack('C*', $data);
 
-        if (empty($bytes[2])){
+        if (empty($bytes[2])) {
             return;
         }
 
@@ -188,7 +206,7 @@ abstract class AbstractSocketIO implements EngineInterface
          */
         switch ($length) {
             case 0x7D: // 125
-            break;
+                break;
 
             case 0x7E: // 126
                 $data .= $bytes = $this->readBytes(2);
@@ -199,7 +217,7 @@ abstract class AbstractSocketIO implements EngineInterface
                 }
 
                 $length = $bytes[1];
-            break;
+                break;
 
             case 0x7F: // 127
                 // are (at least) 64 bits not supported by the architecture ?
@@ -216,7 +234,7 @@ abstract class AbstractSocketIO implements EngineInterface
                 $data .= $bytes = $this->readBytes(8);
                 list($left, $right) = \array_values(\unpack('N2', $bytes));
                 $length = $left << 32 | $right;
-            break;
+                break;
         }
 
         // incorporate the mask key if the mask bit is 1

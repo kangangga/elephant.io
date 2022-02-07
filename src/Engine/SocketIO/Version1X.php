@@ -1,4 +1,5 @@
 <?php
+
 /**
  * This file is part of the Elephant.io package
  *
@@ -86,7 +87,7 @@ class Version1X extends AbstractSocketIO
     }
 
     /** {@inheritDoc} */
-    public function emit($event, array $args)
+    public function emit(...$args)
     {
         $this->keepAlive();
         $namespace = $this->namespace;
@@ -95,7 +96,7 @@ class Version1X extends AbstractSocketIO
             $namespace .= ',';
         }
 
-        return $this->write(static::PROTO_MESSAGE, static::PACKET_EVENT . $namespace . json_encode([$event, $args]));
+        return $this->write(static::PROTO_MESSAGE, static::PACKET_EVENT . $namespace . json_encode($args));
     }
 
     /** {@inheritDoc} */
@@ -104,8 +105,10 @@ class Version1X extends AbstractSocketIO
         while (true) {
             if ($data = $this->read()) {
                 $packet = $this->decodePacket($data);
-                if ($packet->proto === static::PROTO_MESSAGE && $packet->type === static::PACKET_EVENT &&
-                    $this->matchNamespace($packet->nsp) && $packet->event === $event) {
+                if (
+                    $packet->proto === static::PROTO_MESSAGE && $packet->type === static::PACKET_EVENT &&
+                    $this->matchNamespace($packet->nsp) && $packet->event === $event
+                ) {
                     return $packet;
                 }
             }
@@ -136,8 +139,10 @@ class Version1X extends AbstractSocketIO
 
         $payload = $this->getPayload($code, $message);
         if (count($fragments = $payload->encode()->getFragments()) > 1) {
-            throw new \RuntimeException(sprintf('Payload is exceed the maximum allowed length of %d!',
-                $this->options['max_payload']));
+            throw new \RuntimeException(sprintf(
+                'Payload is exceed the maximum allowed length of %d!',
+                $this->options['max_payload']
+            ));
         }
         $bytes = $this->socket->send($fragments[0]);
 
@@ -230,8 +235,8 @@ class Version1X extends AbstractSocketIO
             $packet = $dseq->getData();
             switch ($type) {
                 case static::PACKET_CONNECT:
-                  $packet = json_decode($packet, true);
-                  break;
+                    $packet = json_decode($packet, true);
+                    break;
             }
             $item = new \stdClass();
             $item->type = $type;

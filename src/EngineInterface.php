@@ -1,4 +1,5 @@
 <?php
+
 /**
  * This file is part of the Elephant.io package
  *
@@ -44,10 +45,9 @@ interface EngineInterface extends LoggerAwareInterface
     /**
      * Emits a message through the websocket
      *
-     * @param string $event Event to emit
      * @param array  $args  Arguments to send
      */
-    public function emit($event, array $args);
+    public function emit(...$args);
 
     /**
      * Wait for event to arrive.

@@ -1,4 +1,5 @@
 <?php
+
 /**
  * This file is part of the Elephant.io package
  *
@@ -95,16 +96,14 @@ class Client
     /**
      * Emits a message through the engine
      *
-     * @param string $event
      * @param array  $args
      *
      * @return $this
      */
-    public function emit($event, array $args)
+    public function emit(...$args)
     {
-        $this->logger->debug('Sending a new message', ['event' => $event, 'args' => $args]);
-        $this->engine->emit($event, $args);
-
+        $this->logger->debug('Sending a new message');
+        $this->engine->emit(...$args);
         return $this;
     }
 

@@ -3,7 +3,7 @@
     "type": "library",
     "description": "Send events to a websocket",
     "license": "MIT",
-    "version": "1.0.2",
+    "version": "1.0.5",
     "homepage": "http://elephant.io",
     "require": {
         "php": ">=7.1.0",
